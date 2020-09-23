@@ -28,6 +28,31 @@ void push(Node **head, int data){
     *head = new_node;
 }
 
+void insert_end(Node **head, int data){
+    Node *next;
+    Node *curr=*head;
+    Node *prev=NULL;
+
+    Node *new_node = new Node();
+    new_node->data = data;
+
+    //if there are no elements
+    if(curr == NULL){
+        new_node->link = *head;
+        *head = new_node;
+        return;
+    }
+
+    while (curr != NULL)
+    {
+        next = XOR(prev, curr->link);
+        prev=curr;
+        curr=next;
+    }
+    prev->link = XOR(prev->link, new_node);
+    new_node->link = XOR(NULL, prev);
+}
+
 void printList(Node *head){
     Node *curr = head;
     Node *prev = NULL;
@@ -43,6 +68,7 @@ void printList(Node *head){
 
 int main(){
     Node *head=NULL;
+    insert_end(&head, 60);
     push(&head, 10);
     push(&head, 20);
     push(&head, 30);
