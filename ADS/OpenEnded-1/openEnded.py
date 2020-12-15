@@ -1,12 +1,11 @@
-def printOutput(elementsList):
-    return sorted(elementsList)[:-2]
-    
 numberOfTests = int(input())
-outputList = []
 
+def printOutput(elementsList):
+    for i in elementsList:
+        print(i, end=" ")
+    print()
+    
 for i in range(numberOfTests):
     numberOfElements = int(input())
     elementsList = [int(ele) for ele in input().split()]
-    outputList.append(printOutput(elementsList))
-    
-for lst in outputList: print(lst)
+    printOutput(sorted(elementsList)[:-2])
