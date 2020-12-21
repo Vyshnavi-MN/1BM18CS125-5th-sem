@@ -1,13 +1,3 @@
-
-def getAttributes(string):
-    expr = '\([^)]+\)'
-    matches = re.findall(expr, string)
-    return [m for m in str(matches) if m.isalpha()]
-
-def getPredicates(string):
-    expr = '[a-z~]+\([A-Za-z,]+\)'
-    return re.findall(expr, string)
-
 def DeMorgan(sentence):
     string = ''.join(list(sentence).copy())
     string = string.replace('~~','')
@@ -25,6 +15,16 @@ def DeMorgan(sentence):
     string = ''.join(s)    
     string = string.replace('~~','')
     return f'[{string}]' if flag else string
+
+def getPredicates(string):
+    expr = '[a-z~]+\([A-Za-z,]+\)'
+    return re.findall(expr, string)
+
+def getAttributes(string):
+    expr = '\([^)]+\)'
+    matches = re.findall(expr, string)
+    return [m for m in str(matches) if m.isalpha()]
+
 def Skolemization(sentence):
     SKOLEM_CONSTANTS = [f'{chr(c)}' for c in range(ord('A'), ord('Z')+1)]
     statement = ''.join(list(sentence).copy())
