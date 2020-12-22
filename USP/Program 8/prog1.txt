@@ -1,0 +1,15 @@
+if [ $# -eq 0 ]
+ then
+echo "NO ARGUMENTS"
+ else
+for i in $*
+do
+echo $i >> temp
+done
+i=$#
+while [ $i -ne 0 ]
+do
+head -$i temp | tail -1
+i=`expr $i - 1`
+done
+ fi 
