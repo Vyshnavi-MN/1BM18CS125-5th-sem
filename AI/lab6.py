@@ -1,102 +1,49 @@
-combination = [(True,True,True),(True,True,False),(True,False,True),(True,False,False),(False,True,True),(False,True,False),(False,False,True),(False,False,False)]
-variable = {'p':0,'q':1,'r':2}
+def processRule(rule):
+    rule = rule.replace('~', 'not ')
+    rule = rule.replace('^', ' and ')
+    rule = rule.replace('v', ' or ')
+    return rule
 
-kb = ''
-q = ''
+def formatRule(rule, P, Q, R):
+    P, Q, R = str(P), str(Q), str(R)
+    rule = rule.replace('P', P)
+    rule = rule.replace('Q', Q)
+    rule = rule.replace('R', R)
+    return rule
 
-priority = {'~':3,'v':1,'^':2}
+def checkEntailment(rule, query):
+    models = [
+        (False, False, False),
+        (False, False, True),
+        (False, True, False),
+        (False, True, True),
+        (True, False, False),
+        (True, False, True),
+        (True, True, False),
+        (True, True, True)
+    ]
+    rule = processRule(rule)
+    entails = True
 
-def input_rules():
-    global kb,q
-    kb = (input("Enter rule :  "))
-    q = (input("enter query :  "))
+    for P, Q, R in models:
+        formattedRule = formatRule(rule, P, Q, R) 
+        print(f'Evaluating: {formattedRule}')
+        KB = eval(formattedRule)
+        _query = R if query == 'R' else P if query == 'P' else Q
+        print(f'Knowledge Base: {KB}      Query: {_query}')
+        if KB:
+            entails &= KB and _query
+            print(f'entails {entails}')
 
-def _eval(i,val1,val2):
-    if i=='^':
-        return val2 and val1
-    return val2 or val1
+    if entails:
+        print('Knowledge Base entails the query')
+    else:
+        print("Knowledge Base doesn't entail the query")
+        
+# Doesn't entail        
+rule, query = '(Rv~P)v(Rv~Q)^(~RvP)^(~RvQ)', 'R'
+checkEntailment(rule, query)
 
-
-def evaluatePostfix(exp,comb):
-    stack = []
-    for i in exp:
-        if isOperand(i):
-            stack.append(comb[variable[i]])
-        elif i == '~':
-            val1 = stack.pop()
-            stack.append(not val1)
-        else:
-            val1 = stack.pop()
-            val2 = stack.pop()
-            stack.append(_eval(i,val1,val2))
-
-    return stack.pop()
-
-def toPostfix(infix):
-    stack=[]
-    postfix = ''
-    for c in infix:
-        if isOperand(c):
-            postfix += c
-        else:
-            if isLeftParanthesis(c):
-                stack.append(c)
-            elif isRightParanthesis(c):
-                operator = stack.pop()
-                while not isLeftParanthesis(operator):
-                    postfix += operator
-                    operator = stack.pop()
-            else:
-                while (not isEmpty(stack)) and hasLessOrEqualPriority(c,peek(stack)):
-                    postfix += stack.pop()
-                stack.append(c)
-    while (not isEmpty(stack)):
-        postfix += stack.pop()
-    return postfix
-
-
-def entailment():
-    global kb,q
-    print('*'*10 + "Truth Table Reference" + '*'*10)
-    print('kb','alpha')
-    print('*'*10)
-    for comb in combination:
-        s = evaluatePostfix(toPostfix(kb),comb)
-        f = evaluatePostfix(toPostfix(q),comb)
-        print(s,f)
-        print('-'*10)
-        if s and not f:
-            return False
-    return True
-
-
-def isOperand(c):
-    return c.isalpha() and c!= 'v'
-
-def isLeftParanthesis(c):
-    return c=='('
-
-def isRightParanthesis(c):
-    return c==')'
-
-def isEmpty(stack):
-    return len(stack)==0
-
-def peek(stack):
-    return stack[-1]
-
-def hasLessOrEqualPriority(c1,c2):
-    try: return priority[c1]<=priority[c2]
-    except KeyError: return False
-
-input_rules()
-ans = entailment()
-if ans:
-    print("Knowledge base entails query")
-else:
-    print("Knowledge base does not entail query")
-    
-    #test
-    #(~qv~pvr)^(~q^p)^q
-
-    # (pvq)^(~rvp)
+# Entails
+rule, query = '(~Qv~PvR)^(~Q^P)^Q', 'R'
+checkEntailment(rule, query)
